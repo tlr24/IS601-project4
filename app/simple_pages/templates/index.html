@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="row">
+        <article class="col-8 lh-lg fs-5">
+            <h1>Home Page</h1>
+            {{ lipsum (n=5, html=True, min=20, max=100) }}
+        </article>
+    </div>
+{% endblock %}
