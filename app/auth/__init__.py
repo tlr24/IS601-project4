@@ -4,7 +4,7 @@ from werkzeug.security import generate_password_hash
 from jinja2 import TemplateNotFound
 from app.db import db
 from app.db.models import User
-from app.auth.forms import register_form, login_form, profile_form
+from app.auth.forms import register_form, login_form, profile_form, security_form
 
 auth = Blueprint('auth', __name__, template_folder='templates')
 
@@ -86,3 +86,18 @@ def edit_profile():
         flash('You Successfully Updated your Profile', 'success')
         return redirect(url_for('auth.dashboard'))
     return render_template('edit_profile.html', form=form)
+
+@auth.route('/account', methods=['POST', 'GET'])
+@login_required
+def manage_account():
+    user = User.query.get(current_user.get_id())
+    form = security_form(obj=user)
+    if form.validate_on_submit():
+        user.email = form.email.data
+        user.password = form.password.data
+        db.session.add(current_user)
+        db.session.commit()
+        flash('You Successfully Updated your Password or Email', 'success')
+        return redirect(url_for('auth.dashboard'))
+    return render_template('manage_account.html', form=form)
+

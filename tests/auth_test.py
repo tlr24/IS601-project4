@@ -135,3 +135,19 @@ def test_edit_profile(client, add_user):
     # test that the user's about attribute was updated
     with client.application.app_context():
         assert User.query.filter_by(email="a@a.com").first().about == "hi"
+
+def test_manage_account(client, add_user):
+    """Tests editing user account"""
+    # login to update the user's email
+    client.post("/login", data={"email": "a@a.com", "password": "123La!"})
+    response = client.post("/account", data={"email": "a@gmail.com","password": "123La!", "confirm": "123La!"})
+    # check that we got redirected to the dashboard
+    assert response.status_code == 302
+    assert "/dashboard" == response.headers["Location"]
+
+    response = client.get("/dashboard")
+    assert b"You Successfully Updated your Password or Email" in response.data
+
+    # test that the user's about attribute was updated
+    with client.application.app_context():
+        assert User.query.filter_by(email="a@gmail.com").first() is not None
