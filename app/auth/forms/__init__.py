@@ -31,3 +31,9 @@ class login_form(FlaskForm):
         validators.length(min=6, max=35)
     ])
     submit = SubmitField()
+
+class profile_form(FlaskForm):
+    """Form to edit user profile"""
+    about = TextAreaField('About', [validators.DataRequired()],
+                          description="Please add information about yourself")
+    submit = SubmitField()

@@ -4,7 +4,7 @@ from werkzeug.security import generate_password_hash
 from jinja2 import TemplateNotFound
 from app.db import db
 from app.db.models import User
-from app.auth.forms import register_form, login_form
+from app.auth.forms import register_form, login_form, profile_form
 
 auth = Blueprint('auth', __name__, template_folder='templates')
 
@@ -73,3 +73,16 @@ def dashboard(page):
         return render_template('dashboard.html')
     except TemplateNotFound:
         abort(404)
+
+@auth.route('/profile', methods=['POST', 'GET'])
+@login_required
+def edit_profile():
+    user = User.query.get(current_user.get_id())
+    form = profile_form(obj=user)
+    if form.validate_on_submit():
+        user.about = form.about.data
+        db.session.add(current_user)
+        db.session.commit()
+        flash('You Successfully Updated your Profile', 'success')
+        return redirect(url_for('auth.dashboard'))
+    return render_template('edit_profile.html', form=form)

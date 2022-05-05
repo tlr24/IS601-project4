@@ -119,3 +119,19 @@ def test_allowing_dashboard_access(client, add_user):
     assert response.status_code == 200
     # check for welcome flash message
     assert b"Welcome" in response.data
+
+def test_edit_profile(client, add_user):
+    """Tests editing user profile"""
+    # login to update the user's 'about' field
+    client.post("/login", data={"email": "a@a.com", "password": "123La!"})
+    response = client.post("/profile", data={"about": "hi"})
+    # check that we got redirected to the dashboard
+    assert response.status_code == 302
+    assert "/dashboard" == response.headers["Location"]
+
+    response = client.get("/dashboard")
+    assert b"You Successfully Updated your Profile" in response.data
+
+    # test that the user's about attribute was updated
+    with client.application.app_context():
+        assert User.query.filter_by(email="a@a.com").first().about == "hi"
