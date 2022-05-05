@@ -9,6 +9,7 @@ from app.cli import create_database
 from app.db import db, database
 from app.db.models import User
 from app.simple_pages import simple_pages
+from app.logging_config import log_con, LOGGING_CONFIG
 
 login_manager = flask_login.LoginManager()
 
@@ -34,6 +35,7 @@ def create_app():
     app.register_blueprint(simple_pages)
     app.register_blueprint(database)
     app.register_blueprint(auth)
+    app.register_blueprint(log_con)
     # add command function to cli commands
     app.cli.add_command(create_database)
     app.register_error_handler(404, page_not_found)
