@@ -28,6 +28,7 @@ def create_app():
     app.secret_key = 'This is an INSECURE secret!! DO NOT use this in production!!'
 
     login_manager.init_app(app)
+    login_manager.login_view = "auth.login"
     csrf = CSRFProtect(app)
     bootstrap = Bootstrap5(app)
     app.register_blueprint(simple_pages)
