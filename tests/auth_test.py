@@ -16,7 +16,7 @@ def test_auth_pages(client):
 def test_successful_register(client):
     """Tests successful registration"""
     assert client.get("register").status_code == 200
-    response = client.post("register", data={"email": "a@a.com", "password": "12345678", "confirm": "12345678"})
+    response = client.post("register", data={"email": "a@a.com", "password": "123La!", "confirm": "123La!"})
 
     # test that the user was inserted into the database
     with client.application.app_context():
