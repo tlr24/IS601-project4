@@ -1,5 +1,5 @@
 from flask import Blueprint, redirect, url_for, flash, render_template
-from flask_login import current_user, login_user
+from flask_login import current_user, login_user, login_required, logout_user
 from werkzeug.security import generate_password_hash
 from app.db import db
 from app.db.models import User
@@ -49,3 +49,14 @@ def login():
             flash("Welcome", 'success')
             return redirect(url_for('simple_pages.index'))
     return render_template('login.html', form=form)
+
+@auth.route("/logout")
+@login_required
+def logout():
+    """Logout the current user."""
+    user = current_user
+    user.authenticated = False
+    db.session.add(user)
+    db.session.commit()
+    logout_user()
+    return redirect(url_for('auth.login'))

@@ -37,8 +37,18 @@
                     </div>
                 </div>
                 <div class="navbar-nav d-flex">
-                    {{ render_nav_item('auth.register','Register' ) }}
-                    {{ render_nav_item('auth.login','Login' ) }}
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button"
+                               data-bs-toggle="dropdown" aria-expanded="false">My Account</a>
+                            <ul class="dropdown-menu " aria-labelledby="navbarDarkDropdownMenuLink">
+                                <li><a class="dropdown-item" href="{{ url_for("auth.logout") }}">Logout</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        {{ render_nav_item('auth.register','Register' ) }}
+                        {{ render_nav_item('auth.login','Login' ) }}
+                    {% endif %}
                 </div>
             </nav>
         </header>

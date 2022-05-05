@@ -91,3 +91,11 @@ def test_login_bad_password(client, add_user):
     response = client.post("/login", data={"email": "a@a.com", "password": "notthepassword"}, follow_redirects=True)
     # check for flash message
     assert b"Invalid username or password" in response.data
+
+def test_logout(client, add_user):
+    """Testing logging out"""
+    client.post("/login", data={"email": "a@a.com", "password": "123La!"}, follow_redirects=True)
+    # check that the user_id in the session is removed
+    with client:
+        client.get("/logout")
+        assert "_user_id" not in session
