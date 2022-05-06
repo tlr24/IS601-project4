@@ -32,3 +32,8 @@ def client(application):
 def runner(application):
     """This makes the task runner"""
     return application.test_cli_runner()
+
+@pytest.fixture
+def add_user(client):
+    """Add a user for testing"""
+    client.post("register", data={"email": "a@a.com", "password": "123La!", "confirm": "123La!"})

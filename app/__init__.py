@@ -5,11 +5,12 @@ from flask_bootstrap import Bootstrap5
 from flask_wtf.csrf import CSRFProtect
 import flask_login
 from app.auth import auth
-from app.cli import create_database
+from app.cli import create_database, create_upload_folder
 from app.db import db, database
 from app.db.models import User
 from app.simple_pages import simple_pages
 from app.logging_config import log_con, LOGGING_CONFIG
+from app.transactions import transaction
 
 login_manager = flask_login.LoginManager()
 
@@ -36,8 +37,10 @@ def create_app():
     app.register_blueprint(database)
     app.register_blueprint(auth)
     app.register_blueprint(log_con)
+    app.register_blueprint(transaction)
     # add command function to cli commands
     app.cli.add_command(create_database)
+    app.cli.add_command(create_upload_folder)
     app.register_error_handler(404, page_not_found)
     db.init_app(app)
 

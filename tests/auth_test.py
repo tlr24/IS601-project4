@@ -4,10 +4,6 @@ from flask import session
 from app.db.models import User
 # pylint: disable=line-too-long
 
-@pytest.fixture
-def add_user(client):
-    """Add a user for testing"""
-    client.post("register", data={"email": "a@a.com", "password": "123La!", "confirm": "123La!"})
 
 def test_request_main_menu_links(client):
     """Tests that auth links show up in the main menu"""

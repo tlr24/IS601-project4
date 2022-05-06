@@ -34,6 +34,7 @@
                     <div class="navbar-nav mr-auto">
                         {% if current_user.is_authenticated %}
                             {{ render_nav_item('auth.dashboard', 'Dashboard') }}
+                            {{ render_nav_item('transactions.browse_transactions', 'Transactions') }}
                         {% endif %}
                         {{ render_nav_item('simple_pages.index', 'Home') }}
                         {{ render_nav_item('simple_pages.about', 'About') }}
