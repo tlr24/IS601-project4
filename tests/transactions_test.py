@@ -45,3 +45,4 @@ def test_deleting_song(application, add_user_to_db):
     # delete the transaction
     db.session.delete(transaction)
     #assert db.session.query(Transaction).count() == 0
+
