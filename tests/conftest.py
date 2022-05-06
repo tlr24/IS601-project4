@@ -17,7 +17,9 @@ def application():
         "WTF_CSRF_ENABLED": False
     })
     with application.app_context():
+        db.create_all()
         yield application
+        db.session.remove()
 
 
 @pytest.fixture()
