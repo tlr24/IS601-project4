@@ -97,4 +97,4 @@ def test_get_user_balance(client, add_user, write_test_csv):
 
     # test if the balance is calculated correctly on the dashboard
     response = client.get('/dashboard')
-    assert b"Balance: 200.0" in response.data
+    assert b"Balance: $200.0" in response.data
