@@ -31,7 +31,7 @@ def test_adding_transactions(application, add_user_to_db):
     with application.app_context():
         user = User.query.filter_by(email="a@gmail.com").first()
         # prepare transactions to insert
-        user.transactions = [Transaction("100", "CREDIT"), Transaction("200", "DEBIT")]
+        user.transactions = [Transaction("100", "CREDIT", "1"), Transaction("200", "DEBIT", "1")]
         db.session.commit()
         assert db.session.query(Transaction).count() == 2
         transaction = Transaction.query.filter_by(amount='100').first()
@@ -42,7 +42,7 @@ def test_updating_transactions(application, add_user_to_db):
     with application.app_context():
         user = User.query.filter_by(email="a@gmail.com").first()
         # prepare transactions to edit
-        user.transactions = [Transaction("100", "CREDIT")]
+        user.transactions = [Transaction("100", "CREDIT", "1")]
         db.session.commit()
         # changing the amount of the transaction
         transaction = Transaction.query.filter_by(amount='100').first()
@@ -56,7 +56,7 @@ def test_deleting_transaction(application, add_user_to_db):
     """Test deleting the transaction"""
     user = User.query.filter_by(email="a@gmail.com").first()
     # prepare transaction to insert
-    user.transactions = [Transaction("100", "CREDIT")]
+    user.transactions = [Transaction("100", "CREDIT", "1")]
     db.session.commit()
     transaction = Transaction.query.filter_by(amount='100').first()
     # delete the transaction
