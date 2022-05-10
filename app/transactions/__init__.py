@@ -53,7 +53,8 @@ def browse_transactions(page):
     per_page = 1000
     pagination = Transaction.query.paginate(page, per_page, error_out=False)
     data = pagination.items
+    add_url = 'trans_mgmt.add_transaction'
     try:
-        return render_template('browse_transactions.html',data=data,pagination=pagination)
+        return render_template('browse_transactions.html',data=data,pagination=pagination, add_url=add_url, Transaction=Transaction)
     except TemplateNotFound:
         abort(404)
