@@ -3,7 +3,7 @@ from flask_login import current_user, login_user, login_required, logout_user
 from werkzeug.security import generate_password_hash
 from jinja2 import TemplateNotFound
 from app.db import db
-from app.db.models import User
+from app.db.models import User, Transaction, transaction_user
 from app.auth.forms import register_form, login_form, profile_form, security_form
 
 auth = Blueprint('auth', __name__, template_folder='templates')
@@ -62,13 +62,20 @@ def logout():
     logout_user()
     return redirect(url_for('auth.login'))
 
-@auth.route('/dashboard', methods=['GET'], defaults={"page": 1})
-@auth.route('/dashboard/<int:page>', methods=['GET'])
+@auth.route('/dashboard', methods=['GET'])
 @login_required
-def dashboard(page):
+def dashboard():
+    balance = 0.0
+    #balance = db.session.query(db.func.sum(Transaction.amount)).join(transaction_user).filter(Transaction.id == transaction_user.c.transaction_id).filter_by(user_id=current_user.id).first()
+
+    for transaction in current_user.transactions:
+        #curr_transaction = Transaction.query.filter_by(id=transaction.id).first()
+        balance += float(transaction.amount)
+    balance = str(balance)
+
     data = current_user.transactions
     try:
-        return render_template('dashboard.html', data=data)
+        return render_template('dashboard.html', balance=balance, data=data)
     except TemplateNotFound:
         abort(404)
 

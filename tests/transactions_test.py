@@ -1,4 +1,4 @@
-"""Tests the songs functionality"""
+"""Tests the transaction functionality"""
 import pytest
 import csv
 import os
@@ -17,7 +17,8 @@ def write_test_csv():
     header = ['AMOUNT', 'TYPE']
     data = [
         ['100', "CREDIT"],
-        ['200', "DEBIT"],
+        ['-200', "DEBIT"],
+        ['300', "CREDIT"],
     ]
 
     with open('transaction_test.csv', 'w', encoding='UTF8', newline='') as f:
@@ -30,7 +31,7 @@ def test_adding_transactions(application, add_user_to_db):
     with application.app_context():
         user = User.query.filter_by(email="a@gmail.com").first()
         # prepare transactions to insert
-        user.transactions = [Transaction("100", "CREDIT"), Transaction("200", "DEBIT")]
+        user.transactions = [Transaction("100", "CREDIT", "1"), Transaction("200", "DEBIT", "1")]
         db.session.commit()
         assert db.session.query(Transaction).count() == 2
         transaction = Transaction.query.filter_by(amount='100').first()
@@ -40,8 +41,8 @@ def test_updating_transactions(application, add_user_to_db):
     """Test updating transaction"""
     with application.app_context():
         user = User.query.filter_by(email="a@gmail.com").first()
-        # prepare songs to edit
-        user.transactions = [Transaction("100", "CREDIT")]
+        # prepare transactions to edit
+        user.transactions = [Transaction("100", "CREDIT", "1")]
         db.session.commit()
         # changing the amount of the transaction
         transaction = Transaction.query.filter_by(amount='100').first()
@@ -51,11 +52,11 @@ def test_updating_transactions(application, add_user_to_db):
         updated_transaction = Transaction.query.filter_by(amount='10000000').first()
         assert updated_transaction.amount == "10000000"
 
-def test_deleting_song(application, add_user_to_db):
+def test_deleting_transaction(application, add_user_to_db):
     """Test deleting the transaction"""
     user = User.query.filter_by(email="a@gmail.com").first()
     # prepare transaction to insert
-    user.transactions = [Transaction("100", "CREDIT")]
+    user.transactions = [Transaction("100", "CREDIT", "1")]
     db.session.commit()
     transaction = Transaction.query.filter_by(amount='100').first()
     # delete the transaction
@@ -80,7 +81,20 @@ def test_upload_csv(client, add_user, write_test_csv):
 
     # test that the csv file was processed and the transactions were inserted into the database
     user = User.query.filter_by(email="a@a.com").first()
-    assert len(user.transactions) == 2
-    assert db.session.query(Transaction).count() == 2
+    assert len(user.transactions) == 3
+    assert db.session.query(Transaction).count() == 3
     assert Transaction.query.filter_by(type="CREDIT").first() is not None
     assert Transaction.query.filter_by(type="DEBIT").first() is not None
+
+def test_get_user_balance(client, add_user, write_test_csv):
+    """Test correctly calculating and getting the user's balance on the dashboard"""
+    # login to upload the csv
+    client.post("/login", data={'email': 'a@a.com', 'password': '123La!'})
+    # upload the test csv
+    file = open("transaction_test.csv", 'rb')
+    response = client.post('/transactions/upload', data={'file': file})
+    assert "/transactions" in response.headers["Location"]
+
+    # test if the balance is calculated correctly on the dashboard
+    response = client.get('/dashboard')
+    assert b"Balance: $200.0" in response.data
