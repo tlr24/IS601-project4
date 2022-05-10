@@ -19,3 +19,12 @@ def add_transaction():
         flash('Transaction added successfully', 'success')
         return redirect(url_for('transactions.browse_transactions'), 302)
     return render_template('trans_add.html', form=form)
+
+@trans_mgmt.route('/trans/<int:trans_id>/delete', methods=['POST'])
+@login_required
+def delete_transaction(trans_id):
+    transaction = Transaction.query.get(trans_id)
+    db.session.delete(transaction)
+    db.session.commit()
+    flash('Transaction Deleted', 'success')
+    return redirect(url_for('transactions.browse_transactions'), 302)
