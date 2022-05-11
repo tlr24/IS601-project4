@@ -4,7 +4,7 @@ from werkzeug.security import generate_password_hash
 from app.db import db
 from app.db.models import User
 from app.transactions.decorators import admin_required
-from app.user_mgmt.forms import add_user_form
+from app.user_mgmt.forms import add_user_form, edit_user_form
 
 user_mgmt = Blueprint('user_mgmt', __name__, template_folder='templates')
 
@@ -16,7 +16,8 @@ def browse_users():
     titles = [('email', 'Email'), ('registered_on', 'Registered On')]
     retrieve_url = ('user_mgmt.retrieve_user', [('user_id', ':id')])
     add_url = 'user_mgmt.add_user'
-    return render_template('browse.html', data=data, titles=titles, retrieve_url=retrieve_url, add_url=add_url, User=User, record_type="Users")
+    edit_url = ('user_mgmt.edit_user', [('user_id', ':id')])
+    return render_template('browse.html', data=data, titles=titles, retrieve_url=retrieve_url, add_url=add_url, edit_url=edit_url, User=User, record_type="Users")
 
 @user_mgmt.route('/users/<int:user_id>')
 @login_required
@@ -40,3 +41,17 @@ def add_user():
             flash('Already Registered')
             return redirect(url_for('user_mgmt.browse_users'))
     return render_template('user_add.html', form=form)
+
+@user_mgmt.route('/users/<int:user_id>/edit', methods=['POST', 'GET'])
+@login_required
+def edit_user(user_id):
+    user = User.query.get(user_id)
+    form = edit_user_form(obj=user)
+    if form.validate_on_submit():
+        user.about = form.about.data
+        user.is_admin = int(form.is_admin.data)
+        db.session.add(user)
+        db.session.commit()
+        flash('User updated successfully', 'success')
+        return redirect(url_for('user_mgmt.browse_users'))
+    return render_template('user_edit.html', form=form)

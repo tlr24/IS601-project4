@@ -33,3 +33,24 @@ def test_add_user(client, add_user):
     response = client.get("/user")
     # assert that we get the expected flash message
     assert b"New user was added" in response.data
+
+
+def test_edit_user(client, add_user):
+    """Test that we can edit a user"""
+    # login to be able to edit
+    client.post("/login", data={'email': 'a@a.com', 'password': '123La!'})
+
+    # edit/update the user info
+    response = client.post('/users/1/edit', data={'about': 'hi there', 'is_admin': '1'})
+
+    # assert that we get redirected to the browse page
+    assert '/users' in response.headers['Location']
+    assert response.status_code == 302
+
+    response = client.get("/users")
+    # assert that we get the expected flash message
+    assert b"User updated successfully" in response.data
+
+    # check that the user was updated in the db
+    user = User.query.filter_by(email='a@a.com').first()
+    assert user.about == "hi there"
