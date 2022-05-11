@@ -34,7 +34,7 @@
                     <div class="navbar-nav mr-auto">
                         {% if current_user.is_authenticated %}
                             {{ render_nav_item('auth.dashboard', 'Dashboard') }}
-                            {{ render_nav_item('transactions.browse_transactions', 'Transactions') }}
+                            {{ render_nav_item('transactions.transaction_upload', 'Upload Transactions') }}
                         {% endif %}
                         {{ render_nav_item('simple_pages.index', 'Home') }}
                         {{ render_nav_item('simple_pages.about', 'About') }}
@@ -48,6 +48,9 @@
                             <ul class="dropdown-menu " aria-labelledby="navbarDarkDropdownMenuLink">
                                 <li><a class="dropdown-item" href="{{ url_for("auth.edit_profile") }}">Edit Profile</a></li>
                                 <li><a class="dropdown-item" href="{{ url_for("auth.manage_account") }}">Manage Account</a></li>
+                                {% if current_user.is_admin %}
+                                    <li><a class="dropdown-item" href="{{ url_for("transactions.browse_transactions") }}">Trans Mgmt</a></li>
+                                {% endif %}
                                 <li><a class="dropdown-item" href="{{ url_for("auth.logout") }}">Logout</a></li>
                             </ul>
                         </li>

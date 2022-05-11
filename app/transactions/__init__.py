@@ -9,6 +9,7 @@ from app import config
 from app.db import db
 from app.db.models import Transaction
 from app.transactions.forms import csv_upload
+from app.transactions.decorators import admin_required
 
 transaction = Blueprint('transactions', __name__, template_folder='templates')
 
@@ -51,6 +52,7 @@ def transaction_upload():
 @transaction.route('/transactions', methods=['GET'], defaults={"page": 1})
 @transaction.route('/transactions/<int:page>', methods=['GET'])
 @login_required
+@admin_required
 def browse_transactions(page):
     page = page
     per_page = 1000
