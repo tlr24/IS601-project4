@@ -54,3 +54,24 @@ def test_edit_user(client, add_user):
     # check that the user was updated in the db
     user = User.query.filter_by(email='a@a.com').first()
     assert user.about == "hi there"
+
+
+def test_delete_user(client, add_user):
+    """Test that we can delete a user"""
+    # login
+    client.post("/login", data={'email': 'a@a.com', 'password': '123La!'})
+
+    # add a user
+    client.post('/users/new', data={'email': 't@t.com', 'password': '123La!', 'confirm': '123La!'})
+    # delete the user
+    response = client.post('/users/2/delete')
+    # assert that we get redirected to the browse page
+    assert '/users' in response.headers['Location']
+    assert response.status_code == 302
+
+    # check that the user was removed from the db
+    assert db.session.query(User).count() == 1
+
+    response = client.get("/users")
+    # assert that we get the expected flash message
+    assert b"User deleted" in response.data

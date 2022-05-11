@@ -1,5 +1,5 @@
 from flask import Blueprint, url_for, render_template, flash, redirect
-from flask_login import login_required
+from flask_login import login_required, current_user
 from werkzeug.security import generate_password_hash
 from app.db import db
 from app.db.models import User
@@ -17,7 +17,8 @@ def browse_users():
     retrieve_url = ('user_mgmt.retrieve_user', [('user_id', ':id')])
     add_url = 'user_mgmt.add_user'
     edit_url = ('user_mgmt.edit_user', [('user_id', ':id')])
-    return render_template('browse.html', data=data, titles=titles, retrieve_url=retrieve_url, add_url=add_url, edit_url=edit_url, User=User, record_type="Users")
+    delete_url = ('user_mgmt.delete_user', [('user_id', ':id')])
+    return render_template('browse.html', data=data, titles=titles, retrieve_url=retrieve_url, add_url=add_url, edit_url=edit_url, delete_url=delete_url, User=User, record_type="Users")
 
 @user_mgmt.route('/users/<int:user_id>')
 @login_required
@@ -55,3 +56,15 @@ def edit_user(user_id):
         flash('User updated successfully', 'success')
         return redirect(url_for('user_mgmt.browse_users'))
     return render_template('user_edit.html', form=form)
+
+@user_mgmt.route('/users/<int:user_id>/delete', methods=['POST'])
+@login_required
+def delete_user(user_id):
+    user = User.query.get(user_id)
+    if user.id == current_user.id:
+        flash("You can't delete yourself!")
+        return redirect(url_for('user_mgmt.browse_users'), 302)
+    db.session.delete(user)
+    db.session.commit()
+    flash('User deleted', 'success')
+    return redirect(url_for('user_mgmt.browse_users'), 302)
