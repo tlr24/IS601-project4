@@ -43,7 +43,7 @@ def transaction_upload():
             current_user.transactions.append(trans)
         db.session.commit()
 
-        return redirect(url_for('transactions.browse_transactions'), 302)
+        return redirect(url_for('auth.dashboard'), 302)
     try:
         return render_template('upload_transactions.html', form=form)
     except TemplateNotFound:
