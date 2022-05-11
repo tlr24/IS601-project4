@@ -11,3 +11,13 @@ class add_transaction_form(FlaskForm):
     ], description="Integer amount of transaction")
 
     submit = SubmitField()
+
+class edit_transaction_form(FlaskForm):
+    type = SelectField('Type', [
+    ], description="Type of transaction", choices=[('CREDIT', 'CREDIT'), ('DEBIT', 'DEBIT')])
+
+    amount = IntegerField('Amount', [
+        validators.DataRequired(),
+    ], description="Integer amount of transaction")
+
+    submit = SubmitField()
