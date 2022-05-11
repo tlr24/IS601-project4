@@ -36,8 +36,11 @@ def transaction_upload():
             csv_file = csv.DictReader(file)
             for row in csv_file:
                 log2.debug(row)
-                current_user.transactions.append(Transaction(row['AMOUNT'], row['TYPE'], current_user.id))
-                db.session.commit()
+                transactions.append(Transaction(row['AMOUNT'], row['TYPE'], current_user.id))
+
+        for trans in transactions:
+            current_user.transactions.append(trans)
+        db.session.commit()
 
         return redirect(url_for('transactions.browse_transactions'), 302)
     try:
@@ -53,7 +56,9 @@ def browse_transactions(page):
     per_page = 1000
     pagination = Transaction.query.paginate(page, per_page, error_out=False)
     data = pagination.items
+    add_url = 'trans_mgmt.add_transaction'
+    delete_url = ('trans_mgmt.delete_transaction', [('trans_id', ':id')])
     try:
-        return render_template('browse_transactions.html',data=data,pagination=pagination)
+        return render_template('browse_transactions.html',data=data,pagination=pagination, add_url=add_url, delete_url=delete_url, Transaction=Transaction)
     except TemplateNotFound:
         abort(404)
