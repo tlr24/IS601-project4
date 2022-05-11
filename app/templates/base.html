@@ -50,6 +50,7 @@
                                 <li><a class="dropdown-item" href="{{ url_for("auth.manage_account") }}">Manage Account</a></li>
                                 {% if current_user.is_admin %}
                                     <li><a class="dropdown-item" href="{{ url_for("transactions.browse_transactions") }}">Trans Mgmt</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for("user_mgmt.browse_users") }}">User Mgmt</a></li>
                                 {% endif %}
                                 <li><a class="dropdown-item" href="{{ url_for("auth.logout") }}">Logout</a></li>
                             </ul>
