@@ -11,7 +11,7 @@
 
         <h2>Browse: Transactions</h2>
         {{ render_table(data, show_actions=True, table_classes='table-striped', header_classes='thead-dark', responsive=True, responsive_class='table-responsive-sm', model=Transaction,
-            new_url=add_url, delete_url=delete_url) }}
+            new_url=add_url, delete_url=delete_url, edit_url=edit_url) }}
         {% from 'bootstrap5/pagination.html' import render_pagination %}
 
         {{ render_pagination(pagination) }}

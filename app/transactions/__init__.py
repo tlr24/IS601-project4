@@ -9,6 +9,7 @@ from app import config
 from app.db import db
 from app.db.models import Transaction
 from app.transactions.forms import csv_upload
+from app.transactions.decorators import admin_required
 
 transaction = Blueprint('transactions', __name__, template_folder='templates')
 
@@ -42,7 +43,7 @@ def transaction_upload():
             current_user.transactions.append(trans)
         db.session.commit()
 
-        return redirect(url_for('transactions.browse_transactions'), 302)
+        return redirect(url_for('auth.dashboard'), 302)
     try:
         return render_template('upload_transactions.html', form=form)
     except TemplateNotFound:
@@ -51,6 +52,7 @@ def transaction_upload():
 @transaction.route('/transactions', methods=['GET'], defaults={"page": 1})
 @transaction.route('/transactions/<int:page>', methods=['GET'])
 @login_required
+@admin_required
 def browse_transactions(page):
     page = page
     per_page = 1000
@@ -58,7 +60,8 @@ def browse_transactions(page):
     data = pagination.items
     add_url = 'trans_mgmt.add_transaction'
     delete_url = ('trans_mgmt.delete_transaction', [('trans_id', ':id')])
+    edit_url = ('trans_mgmt.edit_transaction', [('trans_id', ':id')])
     try:
-        return render_template('browse_transactions.html',data=data,pagination=pagination, add_url=add_url, delete_url=delete_url, Transaction=Transaction)
+        return render_template('browse_transactions.html',data=data,pagination=pagination, add_url=add_url, delete_url=delete_url, edit_url=edit_url, Transaction=Transaction)
     except TemplateNotFound:
         abort(404)
