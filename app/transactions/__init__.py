@@ -36,8 +36,11 @@ def transaction_upload():
             csv_file = csv.DictReader(file)
             for row in csv_file:
                 log2.debug(row)
-                current_user.transactions.append(Transaction(row['AMOUNT'], row['TYPE'], current_user.id))
-                db.session.commit()
+                transactions.append(Transaction(row['AMOUNT'], row['TYPE'], current_user.id))
+
+        for trans in transactions:
+            current_user.transactions.append(trans)
+        db.session.commit()
 
         return redirect(url_for('transactions.browse_transactions'), 302)
     try:
